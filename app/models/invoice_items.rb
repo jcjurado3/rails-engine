@@ -1,0 +1,2 @@
+class InvoiceItems < ApplicationRecord
+end
