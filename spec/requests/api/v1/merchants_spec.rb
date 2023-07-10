@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Merchants API' do
+RSpec.describe 'Merchants API' do
   it "sends a list of all Merchants" do
     create_list(:merchant, 15)
 
@@ -23,7 +23,7 @@ describe 'Merchants API' do
     # expect(merchants.first[:name]).to eq("Abbott-Heidenreich")<- need to figure out a way to test for attribute name. 
   end
 
-  it "can get one merchant by :id" do
+  it "sends one merchant by :id" do
     id = create(:merchant).id
     merchant = Merchant.find(id)
 
@@ -40,7 +40,7 @@ describe 'Merchants API' do
     expect(merchant_response[:name]).to eq(merchant.name)
   end
 
-  it "can get all items for a given merchant ID" do
+  it "sends get all items for a given merchant ID" do
     id = create(:merchant).id
     merchant = Merchant.find(id)
 
