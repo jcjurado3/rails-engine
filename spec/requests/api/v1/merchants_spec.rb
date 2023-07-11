@@ -1,50 +1,45 @@
 require 'rails_helper'
 
 RSpec.describe 'Merchants API' do
-  it "sends a list of all Merchants" do
-    create_list(:merchant, 15)
+  describe 'happy path' do
+    it "sends a list of all Merchants" do
+      create_list(:merchant, 15)
 
-    get '/api/v1/merchants'
+      get '/api/v1/merchants'
 
-    expect(response).to be_successful
+      expect(response).to be_successful
 
-    merchants = JSON.parse(response.body, symbolize_names: true)
+      merchants = JSON.parse(response.body, symbolize_names: true)
 
-    expect(merchants.count).to eq(15)
+      expect(merchants.count).to eq(15)
 
-    merchants.each do |merchant|
-      expect(merchant).to have_key(:id)
-      expect(merchant[:id]).to be_an(Integer)
+      merchants.each do |merchant|
+        expect(merchant).to have_key(:id)
+        expect(merchant[:id]).to be_an(Integer)
 
-      expect(merchant).to have_key(:name)
-      expect(merchant[:name]).to be_an(String)
+        expect(merchant).to have_key(:name)
+        expect(merchant[:name]).to be_an(String)
+      end
+
+      # expect(merchants.first[:name]).to eq("Abbott-Heidenreich")<- need to figure out a way to test for attribute name. 
     end
 
-    # expect(merchants.first[:name]).to eq("Abbott-Heidenreich")<- need to figure out a way to test for attribute name. 
-  end
+    it "sends one merchant by :id" do
+      id = create(:merchant).id
+      
+      merchant = Merchant.find(id)
 
-  it "sends one merchant by :id" do
-    id = create(:merchant).id
-    merchant = Merchant.find(id)
+      get "/api/v1/merchants/#{id}"
 
-    get "/api/v1/merchants/#{id}"
+      expect(response).to be_successful
 
-    expect(response).to be_successful
+      merchant_response = JSON.parse(response.body, symbolize_names: true)
 
-    merchant_response = JSON.parse(response.body, symbolize_names: true)
+      expect(merchant_response).to have_key(:id)
+      expect(merchant_response[:id]).to eq(id)
 
-    expect(merchant_response).to have_key(:id)
-    expect(merchant_response[:id]).to eq(id)
-
-    expect(merchant_response).to have_key(:name)
-    expect(merchant_response[:name]).to eq(merchant.name)
-  end
-
-  it "sends get all items for a given merchant ID" do
-    id = create(:merchant).id
-    merchant = Merchant.find(id)
-
-    get "/api/v1/merchants/#{id}"
-
+      expect(merchant_response).to have_key(:name)
+      expect(merchant_response[:name]).to eq(merchant.name)
+    end
   end
 end
