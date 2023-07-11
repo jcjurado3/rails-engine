@@ -9,16 +9,17 @@ RSpec.describe 'Merchants API' do
 
       expect(response).to be_successful
 
-      merchants = JSON.parse(response.body, symbolize_names: true)
-
+      merchants_data = JSON.parse(response.body, symbolize_names: true)
+      merchants = merchants_data[:data]
+      
       expect(merchants.count).to eq(15)
 
       merchants.each do |merchant|
-        expect(merchant).to have_key(:id)
-        expect(merchant[:id]).to be_an(Integer)
+        expect(merchant[:attributes]).to have_key(:id)
+        expect(merchant[:attributes][:id]).to be_an(Integer)
 
-        expect(merchant).to have_key(:name)
-        expect(merchant[:name]).to be_an(String)
+        expect(merchant[:attributes]).to have_key(:name)
+        expect(merchant[:attributes][:name]).to be_an(String)
       end
 
       # expect(merchants.first[:name]).to eq("Abbott-Heidenreich")<- need to figure out a way to test for attribute name. 
