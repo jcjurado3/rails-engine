@@ -15,14 +15,13 @@ RSpec.describe 'Merchants API' do
       expect(merchants.count).to eq(15)
 
       merchants.each do |merchant|
-        expect(merchant[:attributes]).to have_key(:id)
-        expect(merchant[:attributes][:id]).to be_an(Integer)
+        
+        expect(merchant).to have_key(:id)
+        expect(merchant[:id].to_i).to be_an(Integer)
 
         expect(merchant[:attributes]).to have_key(:name)
         expect(merchant[:attributes][:name]).to be_an(String)
       end
-
-      # expect(merchants.first[:name]).to eq("Abbott-Heidenreich")<- need to figure out a way to test for attribute name. 
     end
 
     it "sends one merchant by :id" do
@@ -36,11 +35,11 @@ RSpec.describe 'Merchants API' do
 
       merchant_response = JSON.parse(response.body, symbolize_names: true)
 
-      expect(merchant_response).to have_key(:id)
-      expect(merchant_response[:id]).to eq(id)
+      expect(merchant_response[:data]).to have_key(:id)
+      expect(merchant_response[:data][:id].to_i).to eq(id)
 
-      expect(merchant_response).to have_key(:name)
-      expect(merchant_response[:name]).to eq(merchant.name)
+      expect(merchant_response[:data][:attributes]).to have_key(:name)
+      expect(merchant_response[:data][:attributes][:name]).to eq(merchant.name)
     end
   end
 end
