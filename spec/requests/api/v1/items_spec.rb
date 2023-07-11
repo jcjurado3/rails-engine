@@ -6,6 +6,7 @@ RSpec.describe 'Items API' do
       merchant_id = create(:merchant).id
 
       items = create_list(:item, 10, merchant_id: merchant_id)
+      new_item = create(:item, merchant_id: merchant_id)
 
       get '/api/v1/items'
 
@@ -14,7 +15,43 @@ RSpec.describe 'Items API' do
       items_data = JSON.parse(response.body, symbolize_names: true)
       items = items_data[:data]
 
-      expect(items.count).to eq(10)
+      expect(items.count).to eq(11)
+
+      items.each do |item|
+        expect(item).to have_key(:id)
+        expect(item[:id].to_i).to be_an(Integer)
+
+        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes]).to have_key(:description)
+        expect(item[:attributes]).to have_key(:unit_price)
+      end
+
+      expect(items.last[:attributes][:name]).to eq(new_item.name)
+    end
+
+    it "sends one item" do
+      merchant_id = create(:merchant).id
+
+      item_1 = create(:item, merchant_id: merchant_id)
+      id_1 = item_1.id
+
+      item_2 = create(:item, merchant_id: merchant_id)
+      id_2 = item_2.id
+
+      get "/api/v1/items/#{id_1}"
+
+      expect(response).to be_successful
+
+      item_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(item_data.count).to eq(1)
+
+      expect(item_data[:data]).to have_key(:id)
+      expect(item_data[:id].to_i).to be_an(Integer)
+
+      expect(item_data[:data][:attributes]).to have_key(:name)
+      expect(item_data[:data][:attributes][:name]).to be_an(String)
+      expect(item_data[:data][:attributes][:name]).to eq(item_1.name)
 
     end
   end
