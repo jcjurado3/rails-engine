@@ -19,7 +19,6 @@ RSpec.describe "Merchant Items API" do
     expect(items[:data].count).to eq(5)
 
     items.each do |item|
-      # require 'pry'; binding.pry
       expect(item.last.first).to have_key(:id)
       expect(item.last.first[:id].to_i).to be_an(Integer)
 
