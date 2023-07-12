@@ -9,7 +9,7 @@ class Api::V1::ItemsController < ApplicationController
 
   def create
     created_item = Item.create(item_params)
-    render json: ItemSerializer.new(created_item)
+    render json: ItemSerializer.new(created_item), status: :created
   end
 
   def update
