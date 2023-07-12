@@ -6,8 +6,6 @@ class Merchant < ApplicationRecord
   has_many :transactions, through: :invoices
 
   def self.find_merchant_search(search_keyword)
-    found_merchants = Merchant.where('name ILIKE ?', "%#{search_keyword}%").order(:name).first
-
-    # require 'pry'; binding.pry
+    Merchant.where('name ILIKE ?', "%#{search_keyword}%").order(:name).first
   end
 end
