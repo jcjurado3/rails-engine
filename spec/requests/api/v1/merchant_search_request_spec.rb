@@ -20,4 +20,17 @@ RSpec.describe "Merchant Search API" do
       expect(merchant_response[:data][:attributes][:name]).to eq(merchant_1.name)
     end
   end
+
+  context 'Sad Path' do
+    it 'returns 404' do
+      get '/api/v1/merchants/find?name=NOMATCH'
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      error = JSON.parse(response.body, symbolize_names: true)
+
+      expect(error[:errors][0][:detail]).to eq("Invalid Search Keyword")
+    end
+  end
 end
