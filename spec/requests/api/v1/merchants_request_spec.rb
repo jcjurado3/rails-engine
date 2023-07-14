@@ -8,6 +8,8 @@ RSpec.describe 'Merchants API' do
       get '/api/v1/merchants'
 
       expect(response).to be_successful
+      expect(response.status).to eq(200)
+
 
       merchants_data = JSON.parse(response.body, symbolize_names: true)
       merchants = merchants_data[:data]
@@ -40,6 +42,20 @@ RSpec.describe 'Merchants API' do
 
       expect(merchant_response[:data][:attributes]).to have_key(:name)
       expect(merchant_response[:data][:attributes][:name]).to eq(merchant.name)
+    end
+  end
+
+  describe "Sad Path" do
+    it "returns error response" do
+      get '/api/v1/merchants/9999999'
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      response_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response_data).to have_key(:errors)
+      expect(response_data[:errors].first[:detail]).to eq("Couldn't find Merchant with 'id'=9999999")
     end
   end
 end
