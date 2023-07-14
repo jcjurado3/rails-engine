@@ -1,5 +1,8 @@
 class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound, with: :not_found_error_response
+
+
+
   
 
   def not_found_error_response(error)

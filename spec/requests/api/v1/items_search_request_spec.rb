@@ -9,7 +9,7 @@ RSpec.describe "Items Search API" do
         item_1 = create(:item, name: "Flat-Head Screwdrivers", merchant_id: merchant_id)
         item_2 = create(:item, name: "Spanner Screwdrivers", merchant_id: merchant_id)
         item_3 = create(:item, name: "Phillips Head Screwdrivers", merchant_id: merchant_id)
-        item_4 = create(:item, name: "Hamemr", merchant_id: merchant_id)
+        item_4 = create(:item, name: "Hammer", merchant_id: merchant_id)
 
         get '/api/v1/items/find_all?name=CrEw'
 

@@ -9,4 +9,8 @@ class Merchant < ApplicationRecord
   def self.find_merchant_search(search_keyword)
     merchant = Merchant.where('name ILIKE ?', "%#{search_keyword}%").order(:name).first
   end
+
+  def self.find_merchants_search(search_keyword)
+    merchant = Merchant.where('name ILIKE ?', "%#{search_keyword}%").order(:name)
+  end
 end

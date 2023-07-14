@@ -27,6 +27,8 @@ RSpec.describe 'Items API' do
       end
 
       expect(items.last[:attributes][:name]).to eq(new_item.name)
+      expect(items.last[:attributes][:description]).to eq(new_item.description)
+      expect(items.last[:attributes][:unit_price]).to eq(new_item.unit_price)
     end
 
     it "sends one item" do
@@ -130,6 +132,77 @@ RSpec.describe 'Items API' do
       merchant_cleaned = merchant_data[:data]
 
       expect(merchant_cleaned[:attributes][:name]).to eq(merchant_name)
+    end
+  end
+
+  describe 'Sad Path' do
+    it "returns error response - sends one item" do
+      get '/api/v1/items/9999999999'
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      response_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response_data).to have_key(:errors)
+      expect(response_data[:errors].first[:detail]).to eq("Couldn't find Item with 'id'=9999999999")
+    end
+
+    it "returns error response - can create an item" do
+      item_params = ({
+        name: "iPhone",
+        description: "New Age Information Device",
+        unit_price: 99999999999.99,
+        merchant_id: 9999999
+      })
+      header = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v1/items", headers: header, params: JSON.generate(item: item_params)
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      response_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response_data).to have_key(:errors)
+      expect(response_data[:errors].first[:detail]).to eq("Couldn't find Merchant with 'id'=9999999")
+    end
+
+    it "returns error response - edit existing item" do
+      merchant_id = create(:merchant).id
+      item = create(:item, merchant_id: merchant_id)
+
+      item_params = ({
+        name: "iPhone",
+        description: "New Age Information Device",
+        unit_price: 99999999999.99,
+        merchant_id: 9999999999
+      })
+      header = {"CONTENT_TYPE" => "application/json"}
+
+      patch "/api/v1/items/#{item.id}", headers: header, params: JSON.generate(item: item_params)
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      response_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response_data).to have_key(:errors)
+      expect(response_data[:errors].first[:detail]).to eq("Couldn't find Merchant with 'id'=9999999999")
+    end
+
+    it "destroys invoice if item is destroyed" do
+      merchant_id = create(:merchant).id
+      
+      customer = create(:customer)
+      invoice = Invoice.create!( merchant_id: merchant_id, customer_id: customer.id)
+      item = create(:item, merchant_id: merchant_id)
+      invoice_item = InvoiceItem.create!(item_id: item.id, invoice_id: invoice.id)
+
+      delete "/api/v1/items/#{item.id}"
+
+      expect(response).to be_successful
+      expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
